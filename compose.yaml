@@ -1,0 +1,18 @@
+services:
+  vikunja:
+    image: vikunja/vikunja:2.7.1
+    environment:
+      VIKUNJA_SERVICE_PUBLICURL: http://localhost:3456
+      VIKUNJA_SERVICE_SECRET: test-only-not-a-real-secret #Testing with a throw-away key.
+      VIKUNJA_SERVICE_ENABLEREGISTRATION: "true"
+    ports:
+      - "3456:3456"
+    tmpfs: #Temporary file system
+      - /db
+      - /app/vikunja/files
+    healthcheck:
+      test: ["CMD", "/app/vikunja/vikunja", "healthcheck"] #Running the Vikunja command to perform the healthcheck
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
