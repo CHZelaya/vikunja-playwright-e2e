@@ -1,18 +1,33 @@
+name: vikunja-e2e-playwright
+
 services:
   vikunja:
     image: vikunja/vikunja:2.7.1
     environment:
-      VIKUNJA_SERVICE_PUBLICURL: http://localhost:3456
-      VIKUNJA_SERVICE_SECRET: test-only-not-a-real-secret #Testing with a throw-away key.
+      VIKUNJA_SERVICE_PUBLICURL: ${VIKUNJA_PUBLICURL:-http://vikunja:3456}
+      VIKUNJA_SERVICE_SECRET: test-only-not-a-real-secret
       VIKUNJA_SERVICE_ENABLEREGISTRATION: "true"
     ports:
       - "3456:3456"
-    tmpfs: #Temporary file systems mounted
+    tmpfs:
       - /db
       - /app/vikunja/files
     healthcheck:
-      test: ["CMD", "/app/vikunja/vikunja", "healthcheck"] #Running the Vikunja command to perform the healthcheck
+      test: ["CMD", "/app/vikunja/vikunja", "healthcheck"]
       interval: 5s
       timeout: 5s
       retries: 20
       start_period: 10s
+
+  tests:
+    build: .
+    image: vikunja-e2e-tests
+    depends_on:
+      vikunja:
+        condition: service_healthy
+    environment:
+      BASE_URL: http://vikunja:3456
+    volumes:
+      - ./playwright-report:/app/playwright-report
+    ipc: host
+    init: true
