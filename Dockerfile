@@ -1,3 +1,6 @@
-FROM node:26-bookworm
-
-RUN npx -y playwright@1.64.1 install --with-deps
+FROM mcr.microsoft.com/playwright:v1.64.1-noble
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm@11.1.1 && pnpm install --frozen-lockfile
+COPY . .
+CMD [ "pnpm", "exec", "playwright", "test" ]

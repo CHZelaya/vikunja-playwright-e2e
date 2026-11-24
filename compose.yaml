@@ -7,7 +7,7 @@ services:
       VIKUNJA_SERVICE_ENABLEREGISTRATION: "true"
     ports:
       - "3456:3456"
-    tmpfs: #Temporary file system
+    tmpfs: #Temporary file systems mounted
       - /db
       - /app/vikunja/files
     healthcheck:
